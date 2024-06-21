@@ -2,11 +2,14 @@ package com.crudcompleto.controllers;
 
 import com.crudcompleto.dtos.ProductDTO;
 import com.crudcompleto.models.ProductModel;
+import com.crudcompleto.repositories.ProductRepository;
 import com.crudcompleto.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,11 +23,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
+
 @RestController
 @RequestMapping("/")
 public class ProductController {
 
+
     public final ProductService productService;
+
+
 
     public ProductController(ProductService productService) {
         this.productService = productService;
@@ -32,30 +42,39 @@ public class ProductController {
 
 
     @PostMapping("/products")
-    private ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductDTO productDTO) {
+    public ResponseEntity<ProductModel> saveProduct(@RequestBody @Valid ProductDTO productDTO) {
         var productModel = new ProductModel();
         BeanUtils.copyProperties(productDTO, productModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(productModel));
     }
 
     @GetMapping("/products")
-    private ResponseEntity<List<ProductModel>> getAllProducts() {
-        return ResponseEntity.status(HttpStatus.OK).body(productService.findAll());
+    public ResponseEntity<List<ProductModel>> getAllProducts() {
+        List<ProductModel> productsList = productService.findAll();
+        if (!productsList.isEmpty()) {
+            for (ProductModel productModel:productsList){
+                UUID id = productModel.getId();
+                productModel.add(linkTo(methodOn(ProductController.class).getOneProduct(id)).withSelfRel());
+            }
+
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(productsList);
     }
 
     @GetMapping("/products/{id}")
-    private ResponseEntity<Object> getOneProduct(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<Object> getOneProduct(@PathVariable(value = "id") UUID id) {
         Optional<ProductModel> optionalProductModel = productService.findOne(id);
-        return optionalProductModel.<ResponseEntity<Object>>map(productModel -> ResponseEntity
-                        .status(HttpStatus.OK)
-                        .body(productModel)).orElseGet(() -> ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body("Produto não encontrado"));
+        if (optionalProductModel.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado");
+        }
+        ProductModel productModel = optionalProductModel.get();
+        productModel.add(linkTo(methodOn(ProductController.class).getAllProducts()).withRel("Products List"));
+        return ResponseEntity.status(HttpStatus.OK).body(productModel);
     }
 
 
     @PutMapping("/products/{id}")
-    private ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id,
+    public ResponseEntity<Object> updateProduct(@PathVariable(value = "id") UUID id,
                                                  @RequestBody @Valid ProductDTO productDTO) {
         Optional<ProductModel> optionalProductModel = productService.findOne(id);
         if (optionalProductModel.isEmpty()) {
@@ -67,7 +86,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/products/{id}")
-    private ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") UUID id) {
+    public ResponseEntity<Object> deleteProduct(@PathVariable(value = "id") UUID id) {
         Optional<ProductModel> optionalProductModel = productService.findOne(id);
         if (optionalProductModel.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto não encontrado");
