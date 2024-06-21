@@ -2,7 +2,6 @@ package com.crudcompleto.controllers;
 
 import com.crudcompleto.dtos.ProductDTO;
 import com.crudcompleto.models.ProductModel;
-import com.crudcompleto.repositories.ProductRepository;
 import com.crudcompleto.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
