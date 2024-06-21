@@ -4,6 +4,8 @@ import com.crudcompleto.models.ProductModel;
 import com.crudcompleto.repositories.ProductRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 
 @Service
@@ -23,7 +25,11 @@ public class ProductService {
         return productRepository.save(productModel);
     }
 
-    public ProductModel findByName(String name){
-        return productRepository.findByName(name);
+    public Optional<ProductModel> findOne(UUID id){
+       return productRepository.findById(id);
+    }
+
+    public void deleteProduct(ProductModel productModel){
+         productRepository.delete(productModel);
     }
 }
