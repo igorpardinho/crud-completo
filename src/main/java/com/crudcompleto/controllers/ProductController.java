@@ -47,7 +47,7 @@ public class ProductController {
         }
         ProductModel productModel = new ProductModel();
         BeanUtils.copyProperties(productDTO, productModel);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.save(productModel));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.save(productModel));
     }
 
     @DeleteMapping("/products/{id}")

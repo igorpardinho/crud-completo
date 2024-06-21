@@ -18,6 +18,11 @@ public class ProductModel implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    public ProductModel(String name, BigDecimal value) {
+        this.name = name;
+        this.value = value;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
