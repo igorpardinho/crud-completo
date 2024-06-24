@@ -1,9 +1,9 @@
 <h1 align="center">
-  TODO List
+  Crud_Completo
 </h1>
 
 
-API para gerenciar tarefas (CRUD) que faz parte [desse desafio](https://github.com/simplify-liferay/desafio-junior-backend-simplify) para pessoas desenvolvedoras backend júnior, que se candidatam para a Simplify.
+API para gerenciar produtos (CRUD)
 
 
 ## Tecnologias
@@ -14,6 +14,7 @@ API para gerenciar tarefas (CRUD) que faz parte [desse desafio](https://github.c
 - [SpringDoc OpenAPI 3]
 - [H2]
 - [Web Test Client]
+- [Spring HATEOS]
 
 ## Práticas adotadas
 
